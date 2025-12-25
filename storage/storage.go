@@ -126,6 +126,8 @@ type Client interface {
 }
 
 // Config contains configuration for storage client
+// Note: Use provider-specific config structs (S3Config, MinIOConfig, etc.)
+// for type-safe configuration, or use Options map for dynamic configuration
 type Config struct {
 	Provider Provider          // Storage provider to use
 	Bucket   string            // Default bucket name

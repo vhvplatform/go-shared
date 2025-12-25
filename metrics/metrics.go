@@ -10,6 +10,7 @@ import (
 )
 
 // Collector provides methods for collecting various types of metrics
+// Note: Collector is thread-safe and can be used concurrently
 type Collector struct {
 	namespace string
 	subsystem string
@@ -46,7 +47,7 @@ func NewCollector(config CollectorConfig) *Collector {
 }
 
 // Counter creates or retrieves a counter metric
-func (c *Collector) Counter(name, help string, labels ...string) prometheus.Counter {
+func (c *Collector) Counter(name, help string) prometheus.Counter {
 	key := c.makeKey(name)
 	if counter, exists := c.counters[key]; exists {
 		return counter
