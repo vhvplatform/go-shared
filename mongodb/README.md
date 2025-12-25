@@ -14,7 +14,7 @@ A comprehensive MongoDB package for Go with advanced features including transact
 ## Installation
 
 ```bash
-go get github.com/longvhv/saas-shared-go/mongodb
+go get github.com/vhvcorp/go-shared/mongodb
 ```
 
 ## Basic Setup
@@ -25,7 +25,7 @@ go get github.com/longvhv/saas-shared-go/mongodb
 import (
     "context"
     "time"
-    "github.com/longvhv/saas-shared-go/mongodb"
+    "github.com/vhvcorp/go-shared/mongodb"
 )
 
 func main() {
@@ -65,7 +65,7 @@ The query builder provides a fluent API for building MongoDB queries.
 ### Basic Operations
 
 ```go
-import "github.com/longvhv/saas-shared-go/mongodb"
+import "github.com/vhvcorp/go-shared/mongodb"
 
 // Simple equality
 qb := mongodb.NewQueryBuilder()
@@ -195,7 +195,7 @@ qb.Reset()
 Best for small to medium datasets with random access needs.
 
 ```go
-import "github.com/longvhv/saas-shared-go/mongodb"
+import "github.com/vhvcorp/go-shared/mongodb"
 
 // Create pagination params
 params, err := mongodb.NewPaginationParams(1, 20) // page 1, 20 items per page
@@ -333,7 +333,7 @@ func (u *User) SetTenantID(tenantID string) {
 All operations are automatically scoped to the tenant:
 
 ```go
-import "github.com/longvhv/saas-shared-go/mongodb"
+import "github.com/vhvcorp/go-shared/mongodb"
 
 // Create tenant repository
 collection := client.Collection("users")
@@ -968,7 +968,7 @@ The base repository pattern provides generic CRUD operations with built-in suppo
 ### Creating a Repository
 
 ```go
-import "github.com/longvhv/saas-shared-go/mongodb"
+import "github.com/vhvcorp/go-shared/mongodb"
 
 // Create a repository without soft delete
 userRepo := mongodb.NewBaseRepository(mongodb.RepositoryConfig{
@@ -1237,7 +1237,7 @@ package repository
 
 import (
     "context"
-    "github.com/longvhv/saas-shared-go/mongodb"
+    "github.com/vhvcorp/go-shared/mongodb"
     "go.mongodb.org/mongo-driver/bson"
 )
 

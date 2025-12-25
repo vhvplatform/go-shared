@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/longvhv/saas-shared-go/redis"
+	"github.com/vhvcorp/go-shared/redis"
 )
 
 // Tenant represents a tenant in the system

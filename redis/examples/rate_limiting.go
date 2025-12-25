@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/longvhv/saas-shared-go/redis"
+	"github.com/vhvcorp/go-shared/redis"
 )
 
 // RateLimiter implements token bucket rate limiting using Redis

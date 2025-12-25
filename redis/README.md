@@ -20,7 +20,7 @@ A comprehensive, production-ready Redis caching package for Go with advanced fea
 ## Installation
 
 ```bash
-go get github.com/longvhv/saas-shared-go/redis
+go get github.com/vhvcorp/go-shared/redis
 ```
 
 ## Quick Start
@@ -33,7 +33,7 @@ import (
     "fmt"
     "time"
 
-    "github.com/longvhv/saas-shared-go/redis"
+    "github.com/vhvcorp/go-shared/redis"
 )
 
 func main() {

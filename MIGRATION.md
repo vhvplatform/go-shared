@@ -90,7 +90,7 @@ saas-framework-go/
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    saas-shared-go                           │
+│                    go-shared                                │
 │  (Shared Go libraries - versioned as Go module)             │
 │  - auth, config, logger, mongodb, redis, etc.               │
 └─────────────────────────────────────────────────────────────┘
@@ -140,7 +140,7 @@ saas-framework-go/
 
 | Repository | Contents | Owner |
 |-----------|----------|-------|
-| `saas-shared-go` | Shared Go libraries | Platform Team |
+| `go-shared` | Shared Go libraries | Platform Team |
 | `saas-api-gateway` | API Gateway service | Gateway Team |
 | `saas-auth-service` | Authentication service | Auth Team |
 | `saas-user-service` | User management service | User Team |
@@ -163,7 +163,7 @@ saas-framework-go/
 
 #### 1.1 Create Repository Structure
 ```bash
-saas-shared-go/
+go-shared/
 ├── README.md
 ├── LICENSE
 ├── CONTRIBUTING.md
@@ -192,7 +192,7 @@ saas-shared-go/
 ```
 
 #### 1.2 Update Module Path
-- Change module from `github.com/longvhv/saas-framework-go/pkg` to `github.com/longvhv/saas-shared-go`
+- Change module from `github.com/longvhv/saas-framework-go/pkg` to `github.com/vhvcorp/go-shared`
 - Update all internal imports within the shared library
 
 #### 1.3 Set Up CI/CD
@@ -207,7 +207,7 @@ git push origin v1.0.0
 ```
 
 ### Deliverables
-- [x] `saas-shared-go` repository created
+- [x] `go-shared` repository created
 - [x] All packages from `pkg/` copied
 - [x] Import paths updated
 - [x] go.mod configured
@@ -226,7 +226,7 @@ During this phase, the monorepo continues to work. Services still use `github.co
 
 ### Objectives
 - Create individual repositories for each service
-- Update services to use `saas-shared-go` module
+- Update services to use `go-shared` module
 - Maintain service functionality
 - Preserve Git history during extraction
 
@@ -267,7 +267,7 @@ import "github.com/longvhv/saas-framework-go/pkg/auth"
 
 To:
 ```go
-import "github.com/longvhv/saas-shared-go/auth"
+import "github.com/vhvcorp/go-shared/auth"
 ```
 
 Update `go.mod`:
@@ -277,7 +277,7 @@ module github.com/longvhv/saas-auth-service
 go 1.21
 
 require (
-    github.com/longvhv/saas-shared-go v1.0.0
+    github.com/vhvcorp/go-shared v1.0.0
     // other dependencies
 )
 ```
@@ -457,7 +457,7 @@ saas-devtools/
 
 ### Per-Repository CI/CD
 
-#### Shared Library (`saas-shared-go`)
+#### Shared Library (`go-shared`)
 ```yaml
 # .github/workflows/test.yml
 - Lint on PR
@@ -525,7 +525,7 @@ This repository has been archived and split into multiple repositories.
 
 ## New Repositories
 
-- Shared Library: https://github.com/longvhv/saas-shared-go
+- Shared Library: https://github.com/vhvcorp/go-shared
 - API Gateway: https://github.com/longvhv/saas-api-gateway
 - Auth Service: https://github.com/longvhv/saas-auth-service
 - User Service: https://github.com/longvhv/saas-user-service
@@ -609,7 +609,7 @@ A: Yes. Each phase is independent. We can migrate services gradually.
 **Q: How do we update shared library?**
 A: Update version in service's `go.mod`:
 ```bash
-go get github.com/longvhv/saas-shared-go@v1.1.0
+go get github.com/vhvcorp/go-shared@v1.1.0
 ```
 
 **Q: What about breaking changes in shared library?**
@@ -627,7 +627,7 @@ A: Use `saas-devtools` repository with Docker Compose that references all servic
 ### Workflow Questions
 
 **Q: Where do I make changes to shared code?**
-A: In `saas-shared-go` repository. Release new version, then update services.
+A: In `go-shared` repository. Release new version, then update services.
 
 **Q: Where do I change service code?**
 A: In the service's repository (e.g., `saas-auth-service`).
@@ -656,7 +656,7 @@ A: Yes, git history will be preserved in new repositories using `git filter-bran
 
 ### Resources
 - Main documentation: This file
-- Shared library docs: https://github.com/longvhv/saas-shared-go
+- Shared library docs: https://github.com/vhvcorp/go-shared
 - Slack channel: #multi-repo-migration
 - Weekly sync meetings: Thursdays 2pm
 

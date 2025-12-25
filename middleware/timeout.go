@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/longvhv/saas-shared-go/response"
+	"github.com/vhvcorp/go-shared/response"
 )
 
 // Timeout adds a timeout to requests

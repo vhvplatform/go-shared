@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	pkgctx "github.com/longvhv/saas-shared-go/context"
+	pkgctx "github.com/vhvcorp/go-shared/context"
 )
 
 // UserInfo represents current user information

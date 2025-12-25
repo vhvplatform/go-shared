@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	pkgctx "github.com/longvhv/saas-shared-go/context"
-	"github.com/longvhv/saas-shared-go/jwt"
-	"github.com/longvhv/saas-shared-go/response"
+	pkgctx "github.com/vhvcorp/go-shared/context"
+	"github.com/vhvcorp/go-shared/jwt"
+	"github.com/vhvcorp/go-shared/response"
 )
 
 // Auth validates JWT tokens and sets user context

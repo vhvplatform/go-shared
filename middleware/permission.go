@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/longvhv/saas-shared-go/auth"
+	"github.com/vhvcorp/go-shared/auth"
 )
 
 // RequirePermission creates middleware that checks for specific permission

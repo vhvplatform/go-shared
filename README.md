@@ -2,14 +2,14 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue)](https://golang.org/dl/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/longvhv/saas-shared-go)](https://goreportcard.com/report/github.com/longvhv/saas-shared-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/vhvcorp/go-shared)](https://goreportcard.com/report/github.com/vhvcorp/go-shared)
 
 A comprehensive collection of reusable Go packages for building multi-tenant SaaS applications. This library provides essential building blocks including authentication, authorization, context management, middleware, database utilities, and more.
 
 ## Installation
 
 ```bash
-go get github.com/longvhv/saas-shared-go@latest
+go get github.com/vhvcorp/go-shared@latest
 ```
 
 ## Quick Start
@@ -19,9 +19,9 @@ package main
 
 import (
     "github.com/gin-gonic/gin"
-    "github.com/longvhv/saas-shared-go/middleware"
-    "github.com/longvhv/saas-shared-go/response"
-    "github.com/longvhv/saas-shared-go/tenant"
+    "github.com/vhvcorp/go-shared/middleware"
+    "github.com/vhvcorp/go-shared/response"
+    "github.com/vhvcorp/go-shared/tenant"
 )
 
 func main() {
@@ -79,7 +79,7 @@ Provides context management for handling request-scoped data across the applicat
 **Example Usage:**
 ```go
 import (
-    pkgctx "github.com/longvhv/saas-shared-go/context"
+    pkgctx "github.com/vhvcorp/go-shared/context"
 )
 
 // Create a request context
@@ -114,7 +114,7 @@ Provides utilities for checking permissions and roles, and retrieving current us
 **Example Usage:**
 ```go
 import (
-    "github.com/longvhv/saas-shared-go/auth"
+    "github.com/vhvcorp/go-shared/auth"
 )
 
 // Check permissions
@@ -149,7 +149,7 @@ Provides multi-strategy tenant resolution from HTTP requests.
 **Example Usage:**
 ```go
 import (
-    "github.com/longvhv/saas-shared-go/tenant"
+    "github.com/vhvcorp/go-shared/tenant"
 )
 
 // Create resolver with multiple strategies
@@ -185,7 +185,7 @@ Provides ready-to-use middleware for common functionalities.
 **Example Usage:**
 ```go
 import (
-    "github.com/longvhv/saas-shared-go/middleware"
+    "github.com/vhvcorp/go-shared/middleware"
 )
 
 // Setup middleware chain
@@ -222,7 +222,7 @@ Provides consistent JSON response formatting across all services.
 **Example Usage:**
 ```go
 import (
-    "github.com/longvhv/saas-shared-go/response"
+    "github.com/vhvcorp/go-shared/response"
 )
 
 // Success response
@@ -288,11 +288,11 @@ package main
 
 import (
     "github.com/gin-gonic/gin"
-    "github.com/longvhv/saas-shared-go/auth"
-    pkgctx "github.com/longvhv/saas-shared-go/context"
-    "github.com/longvhv/saas-shared-go/middleware"
-    "github.com/longvhv/saas-shared-go/response"
-    "github.com/longvhv/saas-shared-go/tenant"
+    "github.com/vhvcorp/go-shared/auth"
+    pkgctx "github.com/vhvcorp/go-shared/context"
+    "github.com/vhvcorp/go-shared/middleware"
+    "github.com/vhvcorp/go-shared/response"
+    "github.com/vhvcorp/go-shared/tenant"
 )
 
 func main() {
@@ -401,7 +401,7 @@ This library follows [Semantic Versioning](https://semver.org/):
 
 To use a specific version:
 ```bash
-go get github.com/longvhv/saas-shared-go@v1.0.0
+go get github.com/vhvcorp/go-shared@v1.0.0
 ```
 
 ## Dependencies
@@ -436,7 +436,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 For issues and questions:
-- Open an issue on [GitHub](https://github.com/longvhv/saas-shared-go/issues)
+- Open an issue on [GitHub](https://github.com/vhvcorp/go-shared/issues)
 - Refer to the [documentation](README.md)
 
 ## Changelog

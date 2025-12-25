@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 
 ### Changed
-- Module path changed from `github.com/longvhv/saas-framework-go/pkg` to `github.com/longvhv/saas-shared-go`
+- Module path changed from `github.com/longvhv/saas-framework-go/pkg` to `github.com/vhvcorp/go-shared`
 
 ### Deprecated
 - None

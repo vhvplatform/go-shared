@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/longvhv/saas-shared-go/redis"
+	"github.com/vhvcorp/go-shared/redis"
 )
 
 func main() {
