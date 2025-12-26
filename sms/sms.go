@@ -62,16 +62,16 @@ const (
 type Client interface {
 	// Send sends an SMS message
 	Send(ctx context.Context, msg *Message) (*SendResult, error)
-	
+
 	// SendBulk sends multiple SMS messages in batch
 	SendBulk(ctx context.Context, messages []*Message) ([]*SendResult, error)
-	
+
 	// GetStatus retrieves the status of a sent message
 	GetStatus(ctx context.Context, messageID string) (*SendResult, error)
-	
+
 	// ValidatePhoneNumber checks if a phone number is valid
 	ValidatePhoneNumber(phoneNumber string) error
-	
+
 	// Close closes the SMS client and releases resources
 	Close() error
 }
@@ -146,11 +146,11 @@ func (m *Message) Validate() error {
 // CalculateSegments calculates the number of SMS segments needed
 func (m *Message) CalculateSegments() int {
 	bodyLength := len(m.Body)
-	
+
 	// Standard SMS: 160 characters per segment
 	// Unicode SMS: 70 characters per segment
 	// Multi-part: 153/67 characters per segment (7/3 chars reserved for UDH)
-	
+
 	var singleSegmentLimit, multiSegmentLimit int
 	if m.Unicode {
 		singleSegmentLimit = 70
@@ -159,16 +159,16 @@ func (m *Message) CalculateSegments() int {
 		singleSegmentLimit = 160
 		multiSegmentLimit = 153
 	}
-	
+
 	if bodyLength <= singleSegmentLimit {
 		return 1
 	}
-	
+
 	segments := bodyLength / multiSegmentLimit
 	if bodyLength%multiSegmentLimit > 0 {
 		segments++
 	}
-	
+
 	return segments
 }
 

@@ -225,23 +225,23 @@ func (c *Cache) RememberForever(ctx context.Context, key string, fn func() (inte
 		// Return error if it's not a cache miss
 		return nil, fmt.Errorf("cache get error: %w", err)
 	}
-	
+
 	// Cache miss - execute function
 	value, err := fn()
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Store in cache without expiration (0 TTL means no expiration for Redis)
 	serialized, err := c.serializer.Serialize(value)
 	if err != nil {
 		return nil, fmt.Errorf("failed to serialize value: %w", err)
 	}
-	
+
 	if err := c.client.Set(ctx, c.buildKey(key), serialized, 0).Err(); err != nil {
 		return value, fmt.Errorf("cache set error (value returned): %w", err)
 	}
-	
+
 	return value, nil
 }
 

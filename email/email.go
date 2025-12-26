@@ -67,13 +67,13 @@ type SendResult struct {
 type Client interface {
 	// Send sends an email message
 	Send(ctx context.Context, msg *Message) (*SendResult, error)
-	
+
 	// SendBulk sends multiple emails in batch
 	SendBulk(ctx context.Context, messages []*Message) ([]*SendResult, error)
-	
+
 	// ValidateAddress checks if an email address is valid
 	ValidateAddress(email string) error
-	
+
 	// Close closes the email client and releases resources
 	Close() error
 }
@@ -109,10 +109,10 @@ type AWSSESConfig struct {
 
 // MailgunConfig contains Mailgun-specific configuration
 type MailgunConfig struct {
-	Domain     string // Mailgun domain
-	APIKey     string // Mailgun API key
-	PublicKey  string // Mailgun public key
-	BaseURL    string // Mailgun API base URL (optional)
+	Domain    string // Mailgun domain
+	APIKey    string // Mailgun API key
+	PublicKey string // Mailgun public key
+	BaseURL   string // Mailgun API base URL (optional)
 }
 
 // NewClient creates a new email client based on the provider

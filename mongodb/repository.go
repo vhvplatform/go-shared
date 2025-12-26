@@ -439,9 +439,9 @@ func (r *BaseRepository) EnsureIndexes(ctx context.Context, configs []IndexConfi
 	_, err := r.CreateIndexes(ctx, configs)
 	if err != nil {
 		// Check if error is due to index already existing
-		if mongo.IsDuplicateKeyError(err) || 
-		   (err != nil && (err.Error() == "index already exists" || 
-		    err.Error() == "IndexOptionsConflict")) {
+		if mongo.IsDuplicateKeyError(err) ||
+			(err != nil && (err.Error() == "index already exists" ||
+				err.Error() == "IndexOptionsConflict")) {
 			return nil
 		}
 		return fmt.Errorf("failed to ensure indexes: %w", err)

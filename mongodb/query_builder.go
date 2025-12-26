@@ -272,14 +272,14 @@ func (ab *AggregationBuilder) LookupWithPipeline(from, as string, let bson.M, pi
 func (ab *AggregationBuilder) PopulateField(from, localField, foreignField, as string, preserveNull bool) *AggregationBuilder {
 	// Add lookup
 	ab.Lookup(from, localField, foreignField, as)
-	
+
 	// Unwind the result array, optionally preserving null/empty
 	if preserveNull {
 		ab.UnwindWithOptions("$"+as, true)
 	} else {
 		ab.Unwind("$" + as)
 	}
-	
+
 	return ab
 }
 
@@ -301,24 +301,24 @@ func (ab *AggregationBuilder) PopulateMultiple(configs []PopulateConfig) *Aggreg
 			let := bson.M{
 				"localField": "$" + config.LocalField,
 			}
-			
+
 			// Build project stage to select fields
 			projectStage := bson.M{"_id": 1}
 			for _, field := range config.Fields {
 				projectStage[field] = 1
 			}
-			
+
 			pipeline := []bson.M{
 				{"$match": bson.M{"$expr": bson.M{"$eq": []interface{}{"$" + config.ForeignField, "$$localField"}}}},
 				{"$project": projectStage},
 			}
-			
+
 			ab.LookupWithPipeline(config.From, config.As, let, pipeline)
 		} else {
 			// Simple lookup without field selection
 			ab.Lookup(config.From, config.LocalField, config.ForeignField, config.As)
 		}
-		
+
 		// Unwind if needed
 		if config.PreserveNull {
 			ab.UnwindWithOptions("$"+config.As, true)
@@ -616,7 +616,7 @@ type LookupConfig struct {
 // This can handle multiple lookups with field selection and renaming
 func (ph *PopulateHelper) BuildPopulatePipeline(configs []LookupConfig) []bson.M {
 	pipeline := []bson.M{}
-	
+
 	for _, config := range configs {
 		// Build the lookup stage
 		if config.SelectFields != nil || config.RenameFields != nil {
@@ -624,15 +624,15 @@ func (ph *PopulateHelper) BuildPopulatePipeline(configs []LookupConfig) []bson.M
 			let := bson.M{
 				"localField": "$" + config.LocalField,
 			}
-			
+
 			subPipeline := []bson.M{
 				{"$match": bson.M{"$expr": bson.M{"$eq": []interface{}{"$" + config.ForeignField, "$$localField"}}}},
 			}
-			
+
 			// Add project stage for field selection and renaming
 			if config.SelectFields != nil || config.RenameFields != nil {
 				projectStage := bson.M{}
-				
+
 				if config.SelectFields != nil {
 					for _, field := range config.SelectFields {
 						// Check if this field should be renamed
@@ -652,17 +652,17 @@ func (ph *PopulateHelper) BuildPopulatePipeline(configs []LookupConfig) []bson.M
 						projectStage[newName] = "$" + oldName
 					}
 				}
-				
+
 				if len(projectStage) > 0 {
 					subPipeline = append(subPipeline, bson.M{"$project": projectStage})
 				}
 			}
-			
+
 			lookupStage := bson.M{
-				"from": config.From,
-				"let":  let,
+				"from":     config.From,
+				"let":      let,
 				"pipeline": subPipeline,
-				"as": config.As,
+				"as":       config.As,
 			}
 			pipeline = append(pipeline, bson.M{"$lookup": lookupStage})
 		} else {
@@ -676,7 +676,7 @@ func (ph *PopulateHelper) BuildPopulatePipeline(configs []LookupConfig) []bson.M
 				},
 			})
 		}
-		
+
 		// Add unwind stage
 		if config.PreserveNull {
 			pipeline = append(pipeline, bson.M{
@@ -691,7 +691,7 @@ func (ph *PopulateHelper) BuildPopulatePipeline(configs []LookupConfig) []bson.M
 			})
 		}
 	}
-	
+
 	return pipeline
 }
 

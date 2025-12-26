@@ -62,11 +62,11 @@ type ListInput struct {
 
 // ListOutput contains the result of a list operation
 type ListOutput struct {
-	Objects        []Object // List of objects
-	Prefixes       []string // Common prefixes (directories)
-	NextMarker     string   // Marker for next page
-	IsTruncated    bool     // Whether there are more results
-	TotalCount     int      // Total number of objects (if available)
+	Objects     []Object // List of objects
+	Prefixes    []string // Common prefixes (directories)
+	NextMarker  string   // Marker for next page
+	IsTruncated bool     // Whether there are more results
+	TotalCount  int      // Total number of objects (if available)
 }
 
 // ACL represents access control list
@@ -87,40 +87,40 @@ const (
 type Client interface {
 	// Upload uploads an object to storage
 	Upload(ctx context.Context, bucket string, input *UploadInput) (*Object, error)
-	
+
 	// Download downloads an object from storage
 	Download(ctx context.Context, bucket string, input *DownloadInput) (io.ReadCloser, error)
-	
+
 	// Delete deletes an object from storage
 	Delete(ctx context.Context, bucket, key string) error
-	
+
 	// DeleteMultiple deletes multiple objects from storage
 	DeleteMultiple(ctx context.Context, bucket string, keys []string) error
-	
+
 	// Get retrieves object metadata without downloading content
 	Get(ctx context.Context, bucket, key string) (*Object, error)
-	
+
 	// List lists objects in a bucket
 	List(ctx context.Context, bucket string, input *ListInput) (*ListOutput, error)
-	
+
 	// Exists checks if an object exists
 	Exists(ctx context.Context, bucket, key string) (bool, error)
-	
+
 	// Copy copies an object within or between buckets
 	Copy(ctx context.Context, srcBucket, srcKey, dstBucket, dstKey string) (*Object, error)
-	
+
 	// GetPresignedURL generates a pre-signed URL for temporary access
 	GetPresignedURL(ctx context.Context, bucket, key string, expiry time.Duration) (string, error)
-	
+
 	// CreateBucket creates a new bucket
 	CreateBucket(ctx context.Context, bucket string) error
-	
+
 	// DeleteBucket deletes a bucket
 	DeleteBucket(ctx context.Context, bucket string) error
-	
+
 	// BucketExists checks if a bucket exists
 	BucketExists(ctx context.Context, bucket string) (bool, error)
-	
+
 	// Close closes the storage client and releases resources
 	Close() error
 }
@@ -155,9 +155,9 @@ type MinIOConfig struct {
 
 // GCSConfig contains Google Cloud Storage-specific configuration
 type GCSConfig struct {
-	ProjectID           string // GCP project ID
-	CredentialsFile     string // Path to credentials JSON file
-	CredentialsJSON     []byte // Credentials JSON content
+	ProjectID       string // GCP project ID
+	CredentialsFile string // Path to credentials JSON file
+	CredentialsJSON []byte // Credentials JSON content
 }
 
 // AzureBlobConfig contains Azure Blob Storage-specific configuration

@@ -145,9 +145,10 @@ func (l *RedisLock) IsLocked(ctx context.Context) (bool, error) {
 // It returns a channel that will be closed when the refresh loop stops.
 // The caller should cancel the context to stop the refresh loop.
 // Example:
-//   ctx, cancel := context.WithCancel(context.Background())
-//   defer cancel()
-//   errChan := lock.RefreshLoop(ctx, 10*time.Second)
+//
+//	ctx, cancel := context.WithCancel(context.Background())
+//	defer cancel()
+//	errChan := lock.RefreshLoop(ctx, 10*time.Second)
 func (l *RedisLock) RefreshLoop(ctx context.Context, interval time.Duration) <-chan error {
 	errChan := make(chan error, 1)
 

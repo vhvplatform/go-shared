@@ -14,16 +14,16 @@ import (
 type Collector struct {
 	namespace string
 	subsystem string
-	
+
 	// Counters
 	counters map[string]prometheus.Counter
-	
+
 	// Gauges
 	gauges map[string]prometheus.Gauge
-	
+
 	// Histograms
 	histograms map[string]prometheus.Histogram
-	
+
 	// Summaries
 	summaries map[string]prometheus.Summary
 }
@@ -52,14 +52,14 @@ func (c *Collector) Counter(name, help string) prometheus.Counter {
 	if counter, exists := c.counters[key]; exists {
 		return counter
 	}
-	
+
 	counter := promauto.NewCounter(prometheus.CounterOpts{
 		Namespace: c.namespace,
 		Subsystem: c.subsystem,
 		Name:      name,
 		Help:      help,
 	})
-	
+
 	c.counters[key] = counter
 	return counter
 }
@@ -83,14 +83,14 @@ func (c *Collector) Gauge(name, help string) prometheus.Gauge {
 	if gauge, exists := c.gauges[key]; exists {
 		return gauge
 	}
-	
+
 	gauge := promauto.NewGauge(prometheus.GaugeOpts{
 		Namespace: c.namespace,
 		Subsystem: c.subsystem,
 		Name:      name,
 		Help:      help,
 	})
-	
+
 	c.gauges[key] = gauge
 	return gauge
 }
@@ -114,11 +114,11 @@ func (c *Collector) Histogram(name, help string, buckets []float64) prometheus.H
 	if histogram, exists := c.histograms[key]; exists {
 		return histogram
 	}
-	
+
 	if buckets == nil {
 		buckets = prometheus.DefBuckets
 	}
-	
+
 	histogram := promauto.NewHistogram(prometheus.HistogramOpts{
 		Namespace: c.namespace,
 		Subsystem: c.subsystem,
@@ -126,7 +126,7 @@ func (c *Collector) Histogram(name, help string, buckets []float64) prometheus.H
 		Help:      help,
 		Buckets:   buckets,
 	})
-	
+
 	c.histograms[key] = histogram
 	return histogram
 }
@@ -136,7 +136,7 @@ func (c *Collector) HistogramVec(name, help string, labels []string, buckets []f
 	if buckets == nil {
 		buckets = prometheus.DefBuckets
 	}
-	
+
 	return promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Namespace: c.namespace,
@@ -155,11 +155,11 @@ func (c *Collector) Summary(name, help string, objectives map[float64]float64) p
 	if summary, exists := c.summaries[key]; exists {
 		return summary
 	}
-	
+
 	if objectives == nil {
 		objectives = map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001}
 	}
-	
+
 	summary := promauto.NewSummary(prometheus.SummaryOpts{
 		Namespace:  c.namespace,
 		Subsystem:  c.subsystem,
@@ -167,7 +167,7 @@ func (c *Collector) Summary(name, help string, objectives map[float64]float64) p
 		Help:       help,
 		Objectives: objectives,
 	})
-	
+
 	c.summaries[key] = summary
 	return summary
 }
@@ -177,7 +177,7 @@ func (c *Collector) SummaryVec(name, help string, labels []string, objectives ma
 	if objectives == nil {
 		objectives = map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001}
 	}
-	
+
 	return promauto.NewSummaryVec(
 		prometheus.SummaryOpts{
 			Namespace:  c.namespace,
@@ -222,10 +222,10 @@ func (c *Collector) makeKey(name string) string {
 var (
 	// DurationBuckets for measuring request/operation durations in seconds
 	DurationBuckets = []float64{0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10}
-	
+
 	// SizeBuckets for measuring response/data sizes in bytes
 	SizeBuckets = []float64{100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000}
-	
+
 	// CountBuckets for measuring counts/quantities
 	CountBuckets = []float64{1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000}
 )

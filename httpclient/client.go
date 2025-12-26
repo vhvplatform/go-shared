@@ -214,16 +214,16 @@ func (c *Client) buildURL(path string) string {
 	if c.baseURL == "" {
 		return path
 	}
-	
+
 	// Ensure baseURL doesn't end with / and path starts with /
 	baseURL := c.baseURL
 	if len(baseURL) > 0 && baseURL[len(baseURL)-1] == '/' {
 		baseURL = baseURL[:len(baseURL)-1]
 	}
-	
+
 	if len(path) == 0 || path[0] != '/' {
 		path = "/" + path
 	}
-	
+
 	return baseURL + path
 }
