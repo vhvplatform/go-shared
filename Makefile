@@ -58,11 +58,12 @@ vet:
 ## lint: Run golangci-lint
 lint:
 	@echo "Running linters..."
-	@if ! command -v $(GOLINT) > /dev/null; then \
+	@if ! command -v golangci-lint > /dev/null 2>&1; then \
 		echo "golangci-lint not found. Installing..."; \
-		$(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+		export PATH="$$PATH:$$(go env GOPATH)/bin"; \
 	fi
-	$(GOLINT) run ./... --timeout=5m
+	@export PATH="$$PATH:$$(go env GOPATH)/bin" && golangci-lint run ./... --timeout=5m
 
 ## build: Build all packages
 build:
