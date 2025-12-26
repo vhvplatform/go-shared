@@ -12,6 +12,41 @@ A comprehensive collection of reusable Go packages for building multi-tenant Saa
 go get github.com/vhvplatform/go-shared@latest
 ```
 
+## Development
+
+### Prerequisites
+
+- Go 1.25.5 or higher
+- Make (for build automation)
+- golangci-lint (for linting)
+
+### Building
+
+```bash
+# Install dependencies
+make install
+
+# Build all packages
+make build
+
+# Run tests
+make test
+
+# Run tests with coverage
+make test-coverage
+
+# Run linters
+make lint
+
+# Run all checks (fmt, vet, lint, test)
+make check
+```
+
+For a full list of available commands, run:
+```bash
+make help
+```
+
 ## Quick Start
 
 ```go

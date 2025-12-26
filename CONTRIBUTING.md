@@ -34,17 +34,26 @@ By participating in this project, you agree to maintain a respectful and inclusi
 
 ### Prerequisites
 
-- Go 1.21 or higher
+- Go 1.25.5 or higher
 - Git
-- golangci-lint for linting
+- Make (for build automation)
+- golangci-lint for linting (optional, installed automatically by make)
 
 ### Install Dependencies
 
+Using Make (recommended):
+```bash
+make install
+```
+
+Or using Go directly:
 ```bash
 go mod download
 ```
 
 ### Install Development Tools
+
+The Makefile will automatically install golangci-lint if needed. You can also install it manually:
 
 ```bash
 # Install golangci-lint
@@ -78,8 +87,19 @@ Branch naming conventions:
 
 ### 3. Test Your Changes
 
-Run the full test suite:
+Using Make (recommended):
+```bash
+# Run all tests
+make test
 
+# Run tests with coverage
+make test-coverage
+
+# View HTML coverage report
+make coverage-html
+```
+
+Or using Go directly:
 ```bash
 # Run all tests
 go test ./...
@@ -91,9 +111,33 @@ go test -coverprofile=coverage.out -covermode=atomic ./...
 go tool cover -html=coverage.out
 ```
 
-### 4. Lint Your Code
+### 4. Lint and Format Your Code
 
+Using Make (recommended):
 ```bash
+# Format code
+make fmt
+
+# Run go vet
+make vet
+
+# Run linters
+make lint
+
+# Run all checks at once
+make check
+```
+
+Or using Go directly:
+```bash
+# Format code
+go fmt ./...
+gofmt -s -w .
+
+# Run go vet
+go vet ./...
+
+# Run linters
 golangci-lint run ./...
 ```
 
