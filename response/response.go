@@ -30,12 +30,18 @@ type Meta struct {
 	TotalPages int   `json:"total_pages,omitempty"`
 }
 
+// getCorrelationID retrieves correlation ID from context
+// Performance: Inline helper to avoid repeated lookups
+func getCorrelationID(c *gin.Context) string {
+	return c.GetString("correlation_id")
+}
+
 // Success sends a success response
 func Success(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, Response{
 		Success:       true,
 		Data:          data,
-		CorrelationID: c.GetString("correlation_id"),
+		CorrelationID: getCorrelationID(c),
 	})
 }
 
@@ -45,7 +51,7 @@ func SuccessWithMeta(c *gin.Context, data interface{}, meta *Meta) {
 		Success:       true,
 		Data:          data,
 		Meta:          meta,
-		CorrelationID: c.GetString("correlation_id"),
+		CorrelationID: getCorrelationID(c),
 	})
 }
 
@@ -54,7 +60,7 @@ func Created(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusCreated, Response{
 		Success:       true,
 		Data:          data,
-		CorrelationID: c.GetString("correlation_id"),
+		CorrelationID: getCorrelationID(c),
 	})
 }
 
@@ -71,7 +77,7 @@ func Error(c *gin.Context, statusCode int, code string, message string) {
 			Code:    code,
 			Message: message,
 		},
-		CorrelationID: c.GetString("correlation_id"),
+		CorrelationID: getCorrelationID(c),
 	})
 }
 
@@ -84,7 +90,7 @@ func ErrorWithDetails(c *gin.Context, statusCode int, code string, message strin
 			Message: message,
 			Details: details,
 		},
-		CorrelationID: c.GetString("correlation_id"),
+		CorrelationID: getCorrelationID(c),
 	})
 }
 

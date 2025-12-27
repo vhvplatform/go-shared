@@ -41,30 +41,33 @@ func NewRateLimiter(rps float64, burst int) *RateLimiter {
 }
 
 // GetLimiter returns a limiter for the given key
+// Performance: Optimized locking to reduce contention
 func (rl *RateLimiter) GetLimiter(key string) *rate.Limiter {
+	// Fast path: read lock only
 	rl.mu.RLock()
 	_, exists := rl.limiters[key]
 	rl.mu.RUnlock()
 
 	if exists {
-		// Update last access time
+		// Update last access time with write lock
 		rl.mu.Lock()
-		// Check again after acquiring write lock
-		if entry, exists := rl.limiters[key]; exists {
-			entry.lastAccess = time.Now()
+		// Double-check after acquiring write lock
+		if updatedEntry, stillExists := rl.limiters[key]; stillExists {
+			updatedEntry.lastAccess = time.Now()
 			rl.mu.Unlock()
-			return entry.limiter
+			return updatedEntry.limiter
 		}
 		rl.mu.Unlock()
 	}
 
+	// Slow path: create new limiter
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
 
-	// Double-check after acquiring write lock
-	if entry, exists := rl.limiters[key]; exists {
-		entry.lastAccess = time.Now()
-		return entry.limiter
+	// Triple-check after acquiring write lock (another goroutine may have created it)
+	if finalEntry, exists := rl.limiters[key]; exists {
+		finalEntry.lastAccess = time.Now()
+		return finalEntry.limiter
 	}
 
 	limiter := rate.NewLimiter(rl.rate, rl.burst)

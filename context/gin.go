@@ -10,6 +10,7 @@ import (
 const GinContextKey = "request_context"
 
 // ToGinContext stores request context in gin.Context
+// Performance: Also cache the full RequestContext object for efficient retrieval
 func ToGinContext(c *gin.Context, rc *RequestContext) {
 	c.Set("user_id", rc.UserID)
 	c.Set("tenant_id", rc.TenantID)
@@ -19,10 +20,21 @@ func ToGinContext(c *gin.Context, rc *RequestContext) {
 	c.Set("permissions", rc.Permissions)
 	c.Set("correlation_id", rc.CorrelationID)
 	c.Set("tenant_domain", rc.TenantDomain)
+	// Cache the full RequestContext to avoid rebuilding it
+	c.Set(GinContextKey, rc)
 }
 
 // FromGinContext retrieves request context from gin.Context
+// Performance: Return cached RequestContext if available
 func FromGinContext(c *gin.Context) *RequestContext {
+	// Try to get cached context first (performance optimization)
+	if cached, exists := c.Get(GinContextKey); exists {
+		if rc, ok := cached.(*RequestContext); ok && rc != nil {
+			return rc
+		}
+	}
+	
+	// Fallback to building from individual values
 	return &RequestContext{
 		UserID:        c.GetString("user_id"),
 		TenantID:      c.GetString("tenant_id"),

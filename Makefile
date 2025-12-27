@@ -20,13 +20,16 @@ help:
 	@echo "Available targets:"
 	@echo ""
 	@echo "  make test              - Run all tests"
+	@echo "  make test-fast         - Run tests without race detector (faster)"
 	@echo "  make test-coverage     - Run tests with coverage report"
+	@echo "  make bench             - Run benchmark tests"
 	@echo "  make lint              - Run linters"
 	@echo "  make fmt               - Format code"
 	@echo "  make vet               - Run go vet"
 	@echo "  make tidy              - Tidy and verify dependencies"
 	@echo "  make clean             - Clean build artifacts and cache"
 	@echo "  make build             - Build all packages"
+	@echo "  make build-fast        - Build with optimizations (faster)"
 	@echo "  make install           - Install dependencies"
 	@echo "  make check             - Run all checks (fmt, vet, lint, test)"
 	@echo "  make ci                - Run CI pipeline locally"
@@ -70,10 +73,20 @@ build:
 	@echo "Building all packages..."
 	$(GO) build $(GOFLAGS) ./...
 
+## build-fast: Build all packages with caching (faster builds)
+build-fast:
+	@echo "Building all packages with optimizations..."
+	GOCACHE=$$(go env GOCACHE) $(GO) build -trimpath $(GOFLAGS) ./...
+
 ## test: Run all tests
 test:
 	@echo "Running tests..."
 	$(GOTEST) -race -v ./...
+
+## test-fast: Run tests without race detector (faster)
+test-fast:
+	@echo "Running tests (fast mode)..."
+	$(GOTEST) -v ./...
 
 ## test-coverage: Run tests with coverage
 test-coverage:
@@ -116,3 +129,8 @@ version:
 	@if [ "$(CURRENT_GO_VERSION)" != "$(GO_VERSION)" ]; then \
 		echo "WARNING: Go version mismatch! Please use Go $(GO_VERSION)"; \
 	fi
+
+## bench: Run benchmark tests
+bench:
+	@echo "Running benchmarks..."
+	$(GO) test -bench=. -benchmem -run=^$$ ./...

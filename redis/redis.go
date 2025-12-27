@@ -21,16 +21,21 @@ type Config struct {
 }
 
 // NewClient creates a new Redis client
+// Performance: Optimized with larger pool size and connection reuse settings
 func NewClient(cfg Config) (*Client, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr:         cfg.Addr,
-		Password:     cfg.Password,
-		DB:           cfg.DB,
-		DialTimeout:  5 * time.Second,
-		ReadTimeout:  3 * time.Second,
-		WriteTimeout: 3 * time.Second,
-		PoolSize:     10,
-		MinIdleConns: 5,
+		Addr:            cfg.Addr,
+		Password:        cfg.Password,
+		DB:              cfg.DB,
+		DialTimeout:     5 * time.Second,
+		ReadTimeout:     3 * time.Second,
+		WriteTimeout:    3 * time.Second,
+		PoolSize:        20,                    // Increased from 10 for better concurrency
+		MinIdleConns:    5,
+		MaxIdleConns:    10,                    // Added to control max idle connections
+		ConnMaxLifetime: 5 * time.Minute,       // Added to refresh connections periodically
+		ConnMaxIdleTime: 30 * time.Second,      // Added to close idle connections
+		PoolTimeout:     4 * time.Second,       // Added to prevent long waits for connections
 	})
 
 	// Test connection

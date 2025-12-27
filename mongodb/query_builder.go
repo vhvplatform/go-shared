@@ -13,9 +13,10 @@ type QueryBuilder struct {
 }
 
 // NewQueryBuilder creates a new QueryBuilder
+// Performance: Pre-allocate map with reasonable capacity
 func NewQueryBuilder() *QueryBuilder {
 	return &QueryBuilder{
-		filter: bson.M{},
+		filter: make(bson.M, 8), // Pre-allocate for common query size
 	}
 }
 
@@ -174,8 +175,9 @@ func (qb *QueryBuilder) BuildWithTenant(tenantID string) bson.M {
 }
 
 // Clone creates a copy of the QueryBuilder for reusability
+// Performance: Pre-allocate with same capacity as source
 func (qb *QueryBuilder) Clone() *QueryBuilder {
-	newFilter := bson.M{}
+	newFilter := make(bson.M, len(qb.filter))
 	for k, v := range qb.filter {
 		newFilter[k] = v
 	}
@@ -185,8 +187,12 @@ func (qb *QueryBuilder) Clone() *QueryBuilder {
 }
 
 // Reset clears all conditions
+// Performance: Reuse underlying map storage
 func (qb *QueryBuilder) Reset() *QueryBuilder {
-	qb.filter = bson.M{}
+	// Clear map but keep allocated capacity
+	for k := range qb.filter {
+		delete(qb.filter, k)
+	}
 	return qb
 }
 
@@ -196,9 +202,10 @@ type AggregationBuilder struct {
 }
 
 // NewAggregationBuilder creates a new AggregationBuilder
+// Performance: Pre-allocate slice with reasonable capacity
 func NewAggregationBuilder() *AggregationBuilder {
 	return &AggregationBuilder{
-		pipeline: []bson.M{},
+		pipeline: make([]bson.M, 0, 8), // Pre-allocate for common pipeline size
 	}
 }
 

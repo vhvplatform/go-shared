@@ -16,6 +16,8 @@ const (
 	EmailKey         contextKey = "email"
 	CorrelationIDKey contextKey = "correlation_id"
 	TenantDomainKey  contextKey = "tenant_domain"
+	// RequestCtxKey caches the full request context to avoid repeated field lookups during retrieval
+	RequestCtxKey contextKey = "request_context"
 )
 
 var (
@@ -155,6 +157,7 @@ func GetTenantDomain(ctx context.Context) string {
 }
 
 // WithRequestContext adds full request context
+// Performance: Caches the full RequestContext to avoid repeated field lookups
 func WithRequestContext(ctx context.Context, rc *RequestContext) context.Context {
 	ctx = WithUserID(ctx, rc.UserID)
 	ctx = WithTenantID(ctx, rc.TenantID)
@@ -164,11 +167,20 @@ func WithRequestContext(ctx context.Context, rc *RequestContext) context.Context
 	ctx = WithPermissions(ctx, rc.Permissions)
 	ctx = WithCorrelationID(ctx, rc.CorrelationID)
 	ctx = WithTenantDomain(ctx, rc.TenantDomain)
+	// Store complete context for faster retrieval
+	ctx = context.WithValue(ctx, RequestCtxKey, rc)
 	return ctx
 }
 
 // GetRequestContext retrieves full request context
+// Performance: Returns cached RequestContext if available, avoiding multiple lookups
 func GetRequestContext(ctx context.Context) *RequestContext {
+	// Try to get cached context first (performance optimization)
+	if rc, ok := ctx.Value(RequestCtxKey).(*RequestContext); ok && rc != nil {
+		return rc
+	}
+
+	// Fallback to building from individual values
 	userID, _ := GetUserID(ctx)
 	tenantID, _ := GetTenantID(ctx)
 	permissions, _ := GetPermissions(ctx)

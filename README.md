@@ -6,6 +6,8 @@
 
 A comprehensive collection of reusable Go packages for building multi-tenant SaaS applications. This library provides essential building blocks including authentication, authorization, context management, middleware, database utilities, and more.
 
+**⚡ Performance Optimized**: This library has been optimized for high performance with benchmark-validated improvements. See [PERFORMANCE.md](PERFORMANCE.md) for details.
+
 ## Installation
 
 ```bash
@@ -29,11 +31,20 @@ make install
 # Build all packages
 make build
 
+# Build with optimizations (faster)
+make build-fast
+
 # Run tests
 make test
 
+# Run tests without race detector (faster for quick checks)
+make test-fast
+
 # Run tests with coverage
 make test-coverage
+
+# Run benchmarks
+make bench
 
 # Run linters
 make lint
@@ -46,6 +57,18 @@ For a full list of available commands, run:
 ```bash
 make help
 ```
+
+## Performance
+
+This library has been optimized for high performance. Key improvements include:
+
+- **Context Management**: Cached RequestContext retrieval (9.3 ns/op, 0 allocations)
+- **Permission Checking**: Optimized wildcard matching (11.6 ns/op, 0 allocations)
+- **Rate Limiting**: Reduced lock contention in high-concurrency scenarios
+- **HTTP Client**: Optimized request retry logic with reduced allocations
+- **String Operations**: Pre-allocated buffers and cached regex compilation
+
+See [PERFORMANCE.md](PERFORMANCE.md) for detailed benchmarks and best practices.
 
 ## Quick Start
 

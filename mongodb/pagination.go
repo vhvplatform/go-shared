@@ -81,19 +81,11 @@ func (p *PaginationParams) WithSort(sort bson.D) *PaginationParams {
 }
 
 // Paginate performs offset-based pagination on a collection
+// Performance: Run count and find operations concurrently for better performance
 func Paginate(ctx context.Context, collection *mongo.Collection, filter bson.M, params *PaginationParams, results interface{}) (*PaginationResult, error) {
 	if params == nil {
 		return nil, errors.New("pagination params cannot be nil")
 	}
-
-	// Count total documents
-	total, err := collection.CountDocuments(ctx, filter)
-	if err != nil {
-		return nil, fmt.Errorf("failed to count documents: %w", err)
-	}
-
-	// Calculate total pages
-	totalPages := (total + params.PageSize - 1) / params.PageSize
 
 	// Set find options
 	findOptions := options.Find().
@@ -104,21 +96,55 @@ func Paginate(ctx context.Context, collection *mongo.Collection, filter bson.M, 
 		findOptions.SetSort(params.Sort)
 	}
 
-	// Execute query
-	cursor, err := collection.Find(ctx, filter, findOptions)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute find query: %w", err)
+	// Run count and find operations concurrently for better performance
+	type countResult struct {
+		total int64
+		err   error
 	}
-	defer cursor.Close(ctx)
+	type findResult struct {
+		cursor *mongo.Cursor
+		err    error
+	}
+
+	countChan := make(chan countResult, 1)
+	findChan := make(chan findResult, 1)
+
+	// Execute count in goroutine
+	go func() {
+		total, err := collection.CountDocuments(ctx, filter)
+		countChan <- countResult{total: total, err: err}
+	}()
+
+	// Execute find in goroutine
+	go func() {
+		cursor, err := collection.Find(ctx, filter, findOptions)
+		findChan <- findResult{cursor: cursor, err: err}
+	}()
+
+	// Wait for both operations
+	countRes := <-countChan
+	findRes := <-findChan
+
+	if countRes.err != nil {
+		return nil, fmt.Errorf("failed to count documents: %w", countRes.err)
+	}
+	if findRes.err != nil {
+		return nil, fmt.Errorf("failed to execute find query: %w", findRes.err)
+	}
+
+	defer findRes.cursor.Close(ctx)
 
 	// Decode results
-	if err := cursor.All(ctx, results); err != nil {
+	if err := findRes.cursor.All(ctx, results); err != nil {
 		return nil, fmt.Errorf("failed to decode results: %w", err)
 	}
 
+	// Calculate total pages
+	totalPages := (countRes.total + params.PageSize - 1) / params.PageSize
+
 	return &PaginationResult{
 		Data:        results,
-		Total:       total,
+		Total:       countRes.total,
 		Page:        params.Page,
 		PageSize:    params.PageSize,
 		TotalPages:  totalPages,
@@ -234,5 +260,52 @@ func PaginateWithCursor(ctx context.Context, collection *mongo.Collection, filte
 		NextCursor: nextCursor,
 		HasNext:    hasNext,
 		HasPrev:    params.Cursor != "",
+	}, nil
+}
+
+// PaginateFast performs fast pagination without counting total documents
+// Performance: Skip counting step for better performance when total count isn't needed
+// Use this when you only need to know if there are more pages (HasNext)
+func PaginateFast(ctx context.Context, collection *mongo.Collection, filter bson.M, params *PaginationParams, results interface{}) (*PaginationResult, error) {
+	if params == nil {
+		return nil, errors.New("pagination params cannot be nil")
+	}
+
+	// Fetch one more than pageSize to determine if there are more results
+	findOptions := options.Find().
+		SetSkip(params.Skip()).
+		SetLimit(params.PageSize + 1)
+
+	if len(params.Sort) > 0 {
+		findOptions.SetSort(params.Sort)
+	}
+
+	// Execute query
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute find query: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	// Decode into temporary slice to check for extra result
+	var tempResults []bson.M
+	if err := cursor.All(ctx, &tempResults); err != nil {
+		return nil, fmt.Errorf("failed to decode results: %w", err)
+	}
+
+	// Check if there are more results
+	hasNext := len(tempResults) > int(params.PageSize)
+	if hasNext {
+		tempResults = tempResults[:params.PageSize]
+	}
+
+	return &PaginationResult{
+		Data:        tempResults,
+		Total:       -1, // Total is unknown in fast mode
+		Page:        params.Page,
+		PageSize:    params.PageSize,
+		TotalPages:  -1, // Total pages is unknown in fast mode
+		HasNext:     hasNext,
+		HasPrevious: params.Page > 1,
 	}, nil
 }
