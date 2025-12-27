@@ -16,7 +16,8 @@ const (
 	EmailKey         contextKey = "email"
 	CorrelationIDKey contextKey = "correlation_id"
 	TenantDomainKey  contextKey = "tenant_domain"
-	RequestCtxKey    contextKey = "request_context" // Cache full request context
+	// RequestCtxKey caches the full request context to avoid repeated field lookups during retrieval
+	RequestCtxKey contextKey = "request_context"
 )
 
 var (

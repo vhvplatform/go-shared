@@ -56,16 +56,18 @@ func ToSnakeCase(s string) string {
 		return s
 	}
 	
-	// Pre-allocate with reasonable capacity
+	// Pre-allocate with reasonable capacity based on input length
+	// Estimate: original length + 20% for potential underscores
 	var result strings.Builder
-	result.Grow(len(s) + 10) // Add buffer for underscores
+	result.Grow(len(s) + len(s)/5)
 	
 	for i, r := range s {
 		if i > 0 && r >= 'A' && r <= 'Z' {
 			result.WriteRune('_')
 		}
 		if r >= 'A' && r <= 'Z' {
-			result.WriteRune(r + 32) // Convert to lowercase (faster than strings.ToLower)
+			// Convert uppercase to lowercase (A-Z to a-z)
+			result.WriteRune(r + ('a' - 'A'))
 		} else {
 			result.WriteRune(r)
 		}

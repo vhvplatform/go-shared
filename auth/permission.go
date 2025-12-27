@@ -43,11 +43,9 @@ func (pc *PermissionChecker) HasPermission(ctx context.Context, permission strin
 	// Performance: Only process wildcards if exact match not found
 	for _, p := range permissions {
 		if strings.HasSuffix(p, ".*") {
-			prefixLen := len(p) - 2 // Remove ".*"
-			if len(permission) > prefixLen && permission[prefixLen] == '.' {
-				if permission[:prefixLen] == p[:prefixLen] {
-					return true
-				}
+			prefix := p[:len(p)-2] // Remove ".*"
+			if strings.HasPrefix(permission, prefix+".") {
+				return true
 			}
 		}
 	}

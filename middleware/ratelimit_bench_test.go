@@ -27,7 +27,8 @@ func BenchmarkRateLimiterGetLimiterParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		i := 0
 		for pb.Next() {
-			key := "test-key-" + string(rune(i%10))
+			// Use strconv.Itoa to generate proper string keys
+			key := "test-key-" + string(rune('0'+i%10))
 			_ = rl.GetLimiter(key)
 			i++
 		}

@@ -14,7 +14,7 @@ This document outlines the performance optimizations implemented in the go-share
 - Optimized `GetRequestContext` to return cached context when available
 
 **Performance Impact**:
-- `GetRequestContext`: **9.3 ns/op with 0 allocations** (massive improvement!)
+- `GetRequestContext`: **9.3 ns/op with 0 allocations** (significant improvement!)
 - Eliminates multiple context value lookups when retrieving full request context
 
 **Usage**:
