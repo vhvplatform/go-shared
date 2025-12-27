@@ -22,22 +22,32 @@ func NewPermissionChecker() *PermissionChecker {
 }
 
 // HasPermission checks if user has a specific permission
+// Performance: Optimized with early returns and efficient string operations
 func (pc *PermissionChecker) HasPermission(ctx context.Context, permission string) bool {
 	permissions, err := pkgctx.GetPermissions(ctx)
 	if err != nil {
 		return false
 	}
 
+	// Fast path for wildcard admin permission
 	for _, p := range permissions {
-		if p == permission || p == "*" {
+		if p == "*" {
 			return true
 		}
+		if p == permission {
+			return true
+		}
+	}
 
-		// Check wildcard permissions (e.g., "users.*" matches "users.read")
+	// Check wildcard permissions (e.g., "users.*" matches "users.read")
+	// Performance: Only process wildcards if exact match not found
+	for _, p := range permissions {
 		if strings.HasSuffix(p, ".*") {
-			prefix := strings.TrimSuffix(p, ".*")
-			if strings.HasPrefix(permission, prefix+".") {
-				return true
+			prefixLen := len(p) - 2 // Remove ".*"
+			if len(permission) > prefixLen && permission[prefixLen] == '.' {
+				if permission[:prefixLen] == p[:prefixLen] {
+					return true
+				}
 			}
 		}
 	}

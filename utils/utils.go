@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -35,21 +36,41 @@ func GenerateRandomString(length int) (string, error) {
 }
 
 // IsValidEmail validates an email address
+// Performance: Compile regex once using sync.Once for better performance
+var (
+	emailRegex     *regexp.Regexp
+	emailRegexOnce sync.Once
+)
+
 func IsValidEmail(email string) bool {
-	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	emailRegexOnce.Do(func() {
+		emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	})
 	return emailRegex.MatchString(email)
 }
 
 // ToSnakeCase converts a string to snake_case
+// Performance: Pre-allocates builder capacity and uses efficient character checking
 func ToSnakeCase(s string) string {
+	if s == "" {
+		return s
+	}
+	
+	// Pre-allocate with reasonable capacity
 	var result strings.Builder
+	result.Grow(len(s) + 10) // Add buffer for underscores
+	
 	for i, r := range s {
 		if i > 0 && r >= 'A' && r <= 'Z' {
 			result.WriteRune('_')
 		}
-		result.WriteRune(r)
+		if r >= 'A' && r <= 'Z' {
+			result.WriteRune(r + 32) // Convert to lowercase (faster than strings.ToLower)
+		} else {
+			result.WriteRune(r)
+		}
 	}
-	return strings.ToLower(result.String())
+	return result.String()
 }
 
 // StringPtr returns a pointer to a string

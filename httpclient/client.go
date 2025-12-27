@@ -151,22 +151,27 @@ func (c *Client) doWithRetry(req *http.Request, result interface{}) error {
 }
 
 // executeWithRetry executes the request with retry logic
+// Performance: Optimized to avoid unnecessary body reads and allocations
 func (c *Client) executeWithRetry(req *http.Request) (*http.Response, error) {
 	var resp *http.Response
 	var err error
+	var bodyBytes []byte
+
+	// Read body once if present (avoid reading multiple times)
+	if req.Body != nil {
+		bodyBytes, err = io.ReadAll(req.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read request body: %w", err)
+		}
+		req.Body.Close()
+	}
 
 	for attempt := 0; attempt <= c.retry.MaxRetries; attempt++ {
-		// Clone request for retry (body needs to be reset)
+		// Clone request for retry
 		reqClone := req.Clone(req.Context())
-		if req.Body != nil {
-			// Read original body
-			bodyBytes, readErr := io.ReadAll(req.Body)
-			if readErr != nil {
-				return nil, fmt.Errorf("failed to read request body: %w", readErr)
-			}
-			// Reset original body
-			req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
-			// Set clone body
+		
+		// Reset body if present (reuse bodyBytes)
+		if bodyBytes != nil {
 			reqClone.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 		}
 
