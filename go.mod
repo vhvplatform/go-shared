@@ -16,13 +16,13 @@ require (
 )
 
 require (
+	github.com/ClickHouse/clickhouse-go/v2 v2.42.0
 	github.com/prometheus/client_golang v1.23.2
 	golang.org/x/time v0.8.0
 )
 
 require (
 	github.com/ClickHouse/ch-go v0.69.0 // indirect
-	github.com/ClickHouse/clickhouse-go/v2 v2.42.0 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
