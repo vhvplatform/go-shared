@@ -9,30 +9,30 @@ import (
 
 // Config holds all configuration for the application
 type Config struct {
-	Environment string          `mapstructure:"ENVIRONMENT"`
-	LogLevel    string          `mapstructure:"LOG_LEVEL"`
-	
+	Environment string `mapstructure:"ENVIRONMENT"`
+	LogLevel    string `mapstructure:"LOG_LEVEL"`
+
 	// Infrastructure
-	MongoDB     MongoDBConfig   `mapstructure:",squash"`
-	Redis       RedisConfig     `mapstructure:",squash"`
-	RabbitMQ    RabbitMQConfig  `mapstructure:",squash"`
-	
+	MongoDB  MongoDBConfig  `mapstructure:",squash"`
+	Redis    RedisConfig    `mapstructure:",squash"`
+	RabbitMQ RabbitMQConfig `mapstructure:",squash"`
+
 	// Auth & Security
-	JWT         JWTConfig       `mapstructure:",squash"`
-	OAuth       OAuthConfig     `mapstructure:",squash"`
-	
+	JWT   JWTConfig   `mapstructure:",squash"`
+	OAuth OAuthConfig `mapstructure:",squash"`
+
 	// Communication
-	SMTP        SMTPConfig      `mapstructure:",squash"`
-	SMS         SMSConfig       `mapstructure:",squash"`
-	
+	SMTP SMTPConfig `mapstructure:",squash"`
+	SMS  SMSConfig  `mapstructure:",squash"`
+
 	// Service-specific
-	Email       EmailConfig     `mapstructure:",squash"`
-	Server      ServerConfig    `mapstructure:",squash"`
+	Email       EmailConfig       `mapstructure:",squash"`
+	Server      ServerConfig      `mapstructure:",squash"`
 	ServiceURLs ServiceURLsConfig `mapstructure:",squash"`
-	
+
 	// Cross-cutting concerns
-	RateLimit   RateLimitConfig `mapstructure:",squash"`
-	CORS        CORSConfig      `mapstructure:",squash"`
+	RateLimit RateLimitConfig `mapstructure:",squash"`
+	CORS      CORSConfig      `mapstructure:",squash"`
 }
 
 // MongoDBConfig contains MongoDB configuration
@@ -156,20 +156,20 @@ func Load() (*Config, error) {
 	v.SetDefault("RATE_LIMIT_BURST", 200)
 	v.SetDefault("SMTP_PORT", 587)
 	v.SetDefault("SMTP_POOL_SIZE", 10)
-	
+
 	// SMS defaults
 	v.SetDefault("SMS_PROVIDER", "twilio")
 	v.SetDefault("AWS_REGION", "us-east-1")
-	
+
 	// Email defaults
 	v.SetDefault("EMAIL_WORKERS", 5)
-	
+
 	// Server defaults
 	v.SetDefault("SERVER_PORT", "8080")
 	v.SetDefault("HTTP_PORT", "8080")
 	v.SetDefault("GRPC_PORT", "50051")
 	v.SetDefault("SHUTDOWN_TIMEOUT", 10)
-	
+
 	// Service URLs defaults (for local development)
 	v.SetDefault("AUTH_SERVICE_URL", "http://localhost:8081")
 	v.SetDefault("USER_SERVICE_URL", "http://localhost:8082")
