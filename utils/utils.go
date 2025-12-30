@@ -55,12 +55,12 @@ func ToSnakeCase(s string) string {
 	if s == "" {
 		return s
 	}
-	
+
 	// Pre-allocate with reasonable capacity based on input length
 	// Estimate: original length + 20% for potential underscores
 	var result strings.Builder
 	result.Grow(len(s) + len(s)/5)
-	
+
 	for i, r := range s {
 		if i > 0 && r >= 'A' && r <= 'Z' {
 			result.WriteRune('_')

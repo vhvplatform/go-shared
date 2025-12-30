@@ -93,18 +93,18 @@ func (r *Resolver) resolveFromHeader(c *gin.Context) (string, string, error) {
 
 func (r *Resolver) resolveFromSubdomain(c *gin.Context) (string, string, error) {
 	host := c.Request.Host
-	
+
 	// Performance: Use strings.Index instead of Split for faster parsing
 	firstDot := strings.IndexByte(host, '.')
 	if firstDot == -1 {
 		return "", "", ErrInvalidDomain
 	}
-	
+
 	// Check if there's at least one more dot (domain.com)
 	if strings.IndexByte(host[firstDot+1:], '.') == -1 {
 		return "", "", ErrInvalidDomain
 	}
-	
+
 	subdomain := host[:firstDot]
 	if subdomain == "www" || subdomain == "api" {
 		return "", "", ErrTenantNotResolved

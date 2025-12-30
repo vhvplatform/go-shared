@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of shared library extracted from monorepo
 - `auth` package for authentication and authorization helpers
+- `clickhouse` package for ClickHouse columnar database client with batch operations and query builder
 - `config` package for configuration management with Viper
 - `context` package for request context management
 - `errors` package for custom error types

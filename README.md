@@ -113,6 +113,7 @@ func main() {
 - 🔌 **Middleware Collection** - Ready-to-use Gin middleware for common tasks
 - 🗄️ **Database Utilities** - MongoDB helpers with tenant isolation and transactions
 - 💾 **Caching** - Redis client with multi-tenant support and common patterns
+- 🔢 **ClickHouse Client** - Columnar database client with batch operations and query builder
 - 📨 **Messaging** - RabbitMQ integration
 - 📊 **Structured Logging** - Zap-based logger with context support
 - ✅ **Validation** - Request validation utilities
@@ -469,6 +470,7 @@ Key dependencies:
 - `github.com/golang-jwt/jwt/v5` - JWT implementation
 - `go.mongodb.org/mongo-driver` - MongoDB driver
 - `github.com/redis/go-redis/v9` - Redis client
+- `github.com/ClickHouse/clickhouse-go/v2` - ClickHouse driver
 - `go.uber.org/zap` - Structured logging
 - `github.com/spf13/viper` - Configuration management
 

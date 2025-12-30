@@ -25,7 +25,7 @@ func BenchmarkToGinContext(b *testing.B) {
 		b.StopTimer()
 		c, _ := gin.CreateTestContext(httptest.NewRecorder())
 		b.StartTimer()
-		
+
 		ToGinContext(c, rc)
 	}
 }
