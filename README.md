@@ -105,6 +105,54 @@ func main() {
 }
 ```
 
+## Configuration
+
+The `config` package provides centralized configuration management using [Viper](https://github.com/spf13/viper).
+
+### Features
+
+- ✅ Load from `.env` file
+- ✅ Override with environment variables
+- ✅ Type-safe configuration with struct tags
+- ✅ Default values for all settings
+- ✅ Support for all vhvplatform microservices
+
+### Usage
+
+```go
+import "github.com/vhvplatform/go-shared/config"
+
+// Load configuration
+cfg, err := config.LoadConfig()
+if err != nil {
+    log.Fatal(err)
+}
+
+// Access configuration
+fmt.Println(cfg.MongoDB.URI)
+fmt.Println(cfg.Server.Port)
+fmt.Println(cfg.SMS.Provider)
+```
+
+### Environment Variables
+
+See `.env.example` for a complete list of supported environment variables. The config package supports:
+
+- **Infrastructure**: MongoDB, Redis, RabbitMQ
+- **Authentication**: JWT, OAuth (Google, GitHub)
+- **Communication**: SMTP, SMS (Twilio, AWS SNS)
+- **Service Configuration**: Server ports (HTTP/gRPC), Email workers
+- **API Gateway**: Service URLs for all microservices
+- **Cross-cutting concerns**: Rate limiting, CORS
+
+### Adding New Configuration
+
+1. Add new struct with `mapstructure` tags
+2. Add to main `Config` struct with `,squash` tag
+3. Set default values in `Load()` function
+4. Update `.env.example`
+5. Document in README.md
+
 ## Features
 
 - 🔐 **Authentication & Authorization** - JWT-based auth with permission and role management

@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Extended `config` package to support all vhvplatform microservices
+- Added `SMSConfig` for SMS provider configuration (Twilio, AWS SNS)
+- Added `EmailConfig` for email service workers and pool size
+- Added `ServerConfig` for HTTP/gRPC server configuration
+- Added `ServiceURLsConfig` for API Gateway service discovery
+- Added `.env.example` with all supported environment variables
+- Added comprehensive default values for all configuration options
+- Added `SMTP_POOL_SIZE` field to `SMTPConfig` for connection pooling
+- Added comprehensive test suite for configuration loading
 - Initial release of shared library extracted from monorepo
 - `auth` package for authentication and authorization helpers
 - `clickhouse` package for ClickHouse columnar database client with batch operations and query builder
