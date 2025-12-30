@@ -33,7 +33,7 @@ func FromGinContext(c *gin.Context) *RequestContext {
 			return rc
 		}
 	}
-	
+
 	// Fallback to building from individual values
 	return &RequestContext{
 		UserID:        c.GetString("user_id"),

@@ -169,7 +169,7 @@ func (c *Client) executeWithRetry(req *http.Request) (*http.Response, error) {
 	for attempt := 0; attempt <= c.retry.MaxRetries; attempt++ {
 		// Clone request for retry
 		reqClone := req.Clone(req.Context())
-		
+
 		// Reset body if present (reuse bodyBytes)
 		if bodyBytes != nil {
 			reqClone.Body = io.NopCloser(bytes.NewReader(bodyBytes))

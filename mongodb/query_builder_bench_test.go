@@ -19,7 +19,7 @@ func BenchmarkQueryBuilderWhere(b *testing.B) {
 		b.StopTimer()
 		qb := NewQueryBuilder()
 		b.StartTimer()
-		
+
 		qb.Where("name", "John").
 			Where("age", 30).
 			Where("active", true)
@@ -60,7 +60,7 @@ func BenchmarkQueryBuilderReset(b *testing.B) {
 			Where("age", 30).
 			WhereGreaterThan("score", 80)
 		b.StartTimer()
-		
+
 		qb.Reset()
 	}
 }
@@ -80,7 +80,7 @@ func BenchmarkAggregationBuilderMatch(b *testing.B) {
 		b.StopTimer()
 		ab := NewAggregationBuilder()
 		b.StartTimer()
-		
+
 		ab.Match(filter)
 	}
 }

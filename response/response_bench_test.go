@@ -9,7 +9,7 @@ import (
 
 func BenchmarkSuccess(b *testing.B) {
 	gin.SetMode(gin.ReleaseMode)
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
@@ -17,7 +17,7 @@ func BenchmarkSuccess(b *testing.B) {
 		c, _ := gin.CreateTestContext(w)
 		c.Set("correlation_id", "test-correlation-id")
 		b.StartTimer()
-		
+
 		Success(c, map[string]string{"status": "ok"})
 	}
 }
@@ -25,7 +25,7 @@ func BenchmarkSuccess(b *testing.B) {
 func BenchmarkSuccessWithMeta(b *testing.B) {
 	gin.SetMode(gin.ReleaseMode)
 	meta := NewMeta(1, 10, 100)
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
@@ -33,14 +33,14 @@ func BenchmarkSuccessWithMeta(b *testing.B) {
 		c, _ := gin.CreateTestContext(w)
 		c.Set("correlation_id", "test-correlation-id")
 		b.StartTimer()
-		
+
 		SuccessWithMeta(c, map[string]string{"status": "ok"}, meta)
 	}
 }
 
 func BenchmarkError(b *testing.B) {
 	gin.SetMode(gin.ReleaseMode)
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
@@ -48,7 +48,7 @@ func BenchmarkError(b *testing.B) {
 		c, _ := gin.CreateTestContext(w)
 		c.Set("correlation_id", "test-correlation-id")
 		b.StartTimer()
-		
+
 		Error(c, 400, "BAD_REQUEST", "Invalid input")
 	}
 }
