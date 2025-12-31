@@ -439,22 +439,22 @@ func TestExponentialBackoff(t *testing.T) {
 		expectedMax     time.Duration
 	}{
 		{
-			name:            "First overage",
+			name:            "First overage (attempts=6, max=5, overage=2)",
 			baseDuration:    1 * time.Minute,
 			attempts:        6,
 			maxAttempts:     5,
 			multiplier:      2,
-			expectedMin:     2 * time.Minute,
-			expectedMax:     2 * time.Minute,
+			expectedMin:     4 * time.Minute,
+			expectedMax:     4 * time.Minute,
 		},
 		{
-			name:            "Second overage",
+			name:            "Second overage (attempts=7, max=5, overage=3)",
 			baseDuration:    1 * time.Minute,
 			attempts:        7,
 			maxAttempts:     5,
 			multiplier:      2,
-			expectedMin:     4 * time.Minute,
-			expectedMax:     4 * time.Minute,
+			expectedMin:     8 * time.Minute,
+			expectedMax:     8 * time.Minute,
 		},
 		{
 			name:            "Capped at max",
