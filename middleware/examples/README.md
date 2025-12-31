@@ -8,6 +8,16 @@ This directory contains example applications demonstrating the usage of security
 - Redis server running on localhost:6379
 - Basic understanding of Gin framework
 
+## Building Examples
+
+The examples are excluded from normal builds using build tags. To build an example:
+
+```bash
+go build -tags examples ratelimit_example.go
+go build -tags examples replay_example.go
+go build -tags examples bruteforce_example.go
+```
+
 ## Examples
 
 ### 1. Rate Limiting (`ratelimit_example.go`)
