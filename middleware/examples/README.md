@@ -228,6 +228,9 @@ redis-cli ping
 
 # Start Redis (if not running)
 redis-server
+
+# Or use Docker for easy setup
+docker run -d -p 6379:6379 redis:alpine
 ```
 
 **High Memory Usage:**

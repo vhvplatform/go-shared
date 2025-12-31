@@ -49,6 +49,8 @@ func ReplayProtection(config ReplayProtectionConfig) gin.HandlerFunc {
 		config.KeyPrefix = "replay:"
 	}
 	if config.RedisClient == nil {
+		// Panic is intentional here - this is a configuration error that should be
+		// caught at application startup, not during request handling
 		panic("ReplayProtection: RedisClient is required")
 	}
 
@@ -129,6 +131,8 @@ func ReplayProtectionWithHash(config ReplayProtectionConfig, includeBody bool) g
 		config.KeyPrefix = "replay:hash:"
 	}
 	if config.RedisClient == nil {
+		// Panic is intentional here - this is a configuration error that should be
+		// caught at application startup, not during request handling
 		panic("ReplayProtectionWithHash: RedisClient is required")
 	}
 

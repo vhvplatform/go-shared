@@ -65,6 +65,8 @@ func BruteForceProtection(config BruteForceProtectionConfig) gin.HandlerFunc {
 		config.BackoffMultiplier = 2
 	}
 	if config.RedisClient == nil {
+		// Panic is intentional here - this is a configuration error that should be
+		// caught at application startup, not during request handling
 		panic("BruteForceProtection: RedisClient is required")
 	}
 
@@ -249,21 +251,13 @@ func BruteForcePerUser(config BruteForceProtectionConfig, usernameField string) 
 	}
 
 	config.IdentifierFunc = func(c *gin.Context) string {
-		// Try to get username from JSON body
-		var body map[string]interface{}
-		if err := c.ShouldBindJSON(&body); err == nil {
-			if username, ok := body[usernameField].(string); ok && username != "" {
-				return "user:" + username
-			}
-		}
-
-		// Fallback to query parameter
-		if username := c.Query(usernameField); username != "" {
+		// Try to get username from form values first (doesn't consume body)
+		if username := c.PostForm(usernameField); username != "" {
 			return "user:" + username
 		}
 
-		// Fallback to form value
-		if username := c.PostForm(usernameField); username != "" {
+		// Try query parameter
+		if username := c.Query(usernameField); username != "" {
 			return "user:" + username
 		}
 
@@ -277,21 +271,13 @@ func BruteForcePerUser(config BruteForceProtectionConfig, usernameField string) 
 // BruteForcePerEmail creates brute force protection that tracks by email
 func BruteForcePerEmail(config BruteForceProtectionConfig) gin.HandlerFunc {
 	config.IdentifierFunc = func(c *gin.Context) string {
-		// Try to get email from JSON body
-		var body map[string]interface{}
-		if err := c.ShouldBindJSON(&body); err == nil {
-			if email, ok := body["email"].(string); ok && email != "" {
-				return "email:" + email
-			}
-		}
-
-		// Fallback to query parameter
-		if email := c.Query("email"); email != "" {
+		// Try to get email from form values first (doesn't consume body)
+		if email := c.PostForm("email"); email != "" {
 			return "email:" + email
 		}
 
-		// Fallback to form value
-		if email := c.PostForm("email"); email != "" {
+		// Try query parameter
+		if email := c.Query("email"); email != "" {
 			return "email:" + email
 		}
 
