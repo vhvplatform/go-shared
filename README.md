@@ -108,6 +108,7 @@ func main() {
 ## Features
 
 - 🔐 **Authentication & Authorization** - JWT-based auth with permission and role management
+- 🛡️ **Security Middleware** - Rate limiting, replay attack prevention, and brute force protection
 - 🏢 **Multi-Tenancy** - Flexible tenant resolution strategies (header, subdomain, domain)
 - 📝 **Context Management** - Request-scoped data with correlation ID tracking
 - 🔌 **Middleware Collection** - Ready-to-use Gin middleware for common tasks
@@ -232,6 +233,8 @@ tenantID, domain, err := resolver.Resolve(c)
 Provides ready-to-use middleware for common functionalities.
 
 **Available Middleware:**
+
+**Context & Authentication:**
 - `ContextMiddleware()` - Generates correlation IDs
 - `AppContextMiddleware()` - Extracts application ID
 - `RequestContextMiddleware()` - Builds full request context
@@ -240,6 +243,17 @@ Provides ready-to-use middleware for common functionalities.
 - `RequireRole(role)` - Requires specific role
 - `RequireSuperAdmin()` - Requires super admin role
 - `RequireTenantAdmin()` - Requires tenant admin role
+
+**Security & Protection:**
+- `PerIP(rps, burst)` - Rate limiting per IP address
+- `PerTenant(rps, burst)` - Rate limiting per tenant
+- `PerUser(rps, burst)` - Rate limiting per user
+- `RateLimit(rps, burst, keyFunc)` - Custom rate limiting
+- `ReplayProtection(config)` - Prevents replay attacks using nonces
+- `ReplayProtectionWithHash(config, includeBody)` - Prevents duplicate requests
+- `BruteForceProtection(config)` - Prevents brute force attacks
+- `BruteForcePerUser(config, usernameField)` - Brute force protection per username
+- `BruteForcePerEmail(config)` - Brute force protection per email
 
 **Example Usage:**
 ```go
@@ -266,6 +280,186 @@ protected.POST("/users",
 admin := protected.Group("/admin")
 admin.Use(middleware.RequireTenantAdmin())
 admin.GET("/settings", settingsHandler.GetSettings)
+
+// Rate limiting
+router.Use(middleware.PerIP(100, 200)) // 100 req/sec, burst of 200
+
+// Brute force protection on login
+loginGroup := router.Group("/auth")
+loginGroup.Use(middleware.BruteForcePerUser(middleware.BruteForceProtectionConfig{
+    RedisClient:     redisClient,
+    MaxAttempts:     5,
+    LockoutDuration: 15 * time.Minute,
+}, "username"))
+loginGroup.POST("/login", loginHandler)
+
+// Replay attack protection
+secureAPI := router.Group("/api/v1")
+secureAPI.Use(middleware.ReplayProtection(middleware.ReplayProtectionConfig{
+    RedisClient: redisClient,
+    TimeWindow:  5 * time.Minute,
+}))
+```
+
+#### Security Middleware
+
+The library provides three types of security middleware to protect your applications:
+
+##### 1. Rate Limiting
+
+Prevents API abuse by limiting the number of requests from a source within a time window.
+
+**Features:**
+- Token bucket algorithm implementation
+- Per-IP, per-tenant, per-user, or custom key limiting
+- Automatic cleanup of inactive limiters
+- Configurable rate and burst size
+
+**Example:**
+```go
+import (
+    "github.com/vhvplatform/go-shared/middleware"
+)
+
+// Limit by IP: 100 requests per second with burst of 200
+router.Use(middleware.PerIP(100, 200))
+
+// Limit by tenant
+router.Use(middleware.PerTenant(50, 100))
+
+// Limit by user
+router.Use(middleware.PerUser(10, 20))
+
+// Custom key function
+keyFunc := func(c *gin.Context) string {
+    return c.GetHeader("X-API-Key")
+}
+router.Use(middleware.RateLimit(100, 200, keyFunc))
+```
+
+##### 2. Replay Attack Protection
+
+Prevents replay attacks by ensuring each request is processed only once using nonces and timestamps.
+
+**Features:**
+- Nonce-based request validation
+- Timestamp validation with configurable time window
+- Request signature hashing for duplicate detection
+- Redis-backed storage with automatic expiration
+
+**Example:**
+```go
+import (
+    "time"
+    "github.com/vhvplatform/go-shared/middleware"
+)
+
+// Basic nonce-based protection
+config := middleware.ReplayProtectionConfig{
+    RedisClient:     redisClient,
+    NonceHeader:     "X-Request-Nonce",
+    TimestampHeader: "X-Request-Timestamp",
+    TimeWindow:      5 * time.Minute,
+}
+router.Use(middleware.ReplayProtection(config))
+
+// Hash-based duplicate detection
+router.Use(middleware.ReplayProtectionWithHash(config, true))
+```
+
+**Client Implementation:**
+Clients must send a unique nonce and current timestamp with each request:
+```
+X-Request-Nonce: unique-uuid-or-random-string
+X-Request-Timestamp: 1234567890
+```
+
+##### 3. Brute Force Protection
+
+Prevents brute force attacks by limiting failed authentication attempts and implementing account lockouts.
+
+**Features:**
+- Configurable max attempts and lockout duration
+- Exponential backoff support
+- Per-IP, per-username, or per-email tracking
+- Automatic reset on successful authentication
+- Manual reset capability for admin operations
+
+**Example:**
+```go
+import (
+    "time"
+    "github.com/vhvplatform/go-shared/middleware"
+)
+
+// Basic brute force protection (by IP)
+config := middleware.BruteForceProtectionConfig{
+    RedisClient:     redisClient,
+    MaxAttempts:     5,
+    LockoutDuration: 15 * time.Minute,
+    AttemptWindow:   1 * time.Hour,
+}
+router.Use(middleware.BruteForceProtection(config))
+
+// Track by username
+router.Use(middleware.BruteForcePerUser(config, "username"))
+
+// Track by email
+router.Use(middleware.BruteForcePerEmail(config))
+
+// With exponential backoff
+config.UseExponentialBackoff = true
+config.BackoffMultiplier = 2
+router.Use(middleware.BruteForceProtection(config))
+```
+
+**Usage in Login Handler:**
+```go
+func LoginHandler(c *gin.Context) {
+    username := c.PostForm("username")
+    password := c.PostForm("password")
+    
+    // Get remaining attempts before validation
+    remaining, _ := middleware.GetRemainingAttempts(c)
+    
+    // Validate credentials
+    if !validateCredentials(username, password) {
+        // Record failed attempt
+        middleware.RecordFailedAttempt(c)
+        
+        c.JSON(http.StatusUnauthorized, gin.H{
+            "error": "Invalid credentials",
+            "remaining_attempts": remaining - 1,
+        })
+        return
+    }
+    
+    // Record successful attempt (resets counter)
+    middleware.RecordSuccessfulAttempt(c)
+    
+    c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+}
+```
+
+**Admin Functions:**
+```go
+import "context"
+
+// Check status
+locked, attempts, ttl, err := middleware.GetBruteForceStatus(
+    context.Background(),
+    redisClient,
+    "bruteforce:",
+    "user@example.com",
+)
+
+// Reset protection for a user
+err := middleware.ResetBruteForceProtection(
+    context.Background(),
+    redisClient,
+    "bruteforce:",
+    "user@example.com",
+)
 ```
 
 ### 5. `response` - Standard API Responses
