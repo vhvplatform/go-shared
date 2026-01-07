@@ -17,10 +17,11 @@ var (
 
 // Claims represents JWT claims
 type Claims struct {
-	UserID   string   `json:"user_id"`
-	TenantID string   `json:"tenant_id"`
-	Email    string   `json:"email"`
-	Roles    []string `json:"roles"`
+	UserID      string   `json:"user_id"`
+	TenantID    string   `json:"tenant_id"`
+	Email       string   `json:"email"`
+	Roles       []string `json:"roles"`
+	Permissions []string `json:"permissions,omitempty"`
 	jwt.RegisteredClaims
 }
 
@@ -41,13 +42,14 @@ func NewManager(secret string, expiration, refreshExpiration int) *Manager {
 }
 
 // GenerateToken generates a new JWT token
-func (m *Manager) GenerateToken(userID, tenantID, email string, roles []string) (string, error) {
+func (m *Manager) GenerateToken(userID, tenantID, email string, roles, permissions []string) (string, error) {
 	now := time.Now()
 	claims := Claims{
-		UserID:   userID,
-		TenantID: tenantID,
-		Email:    email,
-		Roles:    roles,
+		UserID:      userID,
+		TenantID:    tenantID,
+		Email:       email,
+		Roles:       roles,
+		Permissions: permissions,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(now.Add(m.expiration)),
 			IssuedAt:  jwt.NewNumericDate(now),
@@ -118,5 +120,5 @@ func (m *Manager) RefreshToken(refreshToken string) (string, error) {
 	}
 
 	// Generate new access token
-	return m.GenerateToken(claims.UserID, claims.TenantID, claims.Email, claims.Roles)
+	return m.GenerateToken(claims.UserID, claims.TenantID, claims.Email, claims.Roles, claims.Permissions)
 }

@@ -19,6 +19,7 @@ type Config struct {
 	OAuth       OAuthConfig     `mapstructure:",squash"`
 	RateLimit   RateLimitConfig `mapstructure:",squash"`
 	CORS        CORSConfig      `mapstructure:",squash"`
+	TLS         TLSConfig       `mapstructure:",squash"`
 }
 
 // MongoDBConfig contains MongoDB configuration
@@ -35,6 +36,7 @@ type RedisConfig struct {
 	Port     string `mapstructure:"REDIS_PORT"`
 	Password string `mapstructure:"REDIS_PASSWORD"`
 	DB       int    `mapstructure:"REDIS_DB"`
+	Enabled  bool   `mapstructure:"REDIS_ENABLED"`
 }
 
 // RabbitMQConfig contains RabbitMQ configuration
@@ -82,6 +84,14 @@ type CORSConfig struct {
 	AllowedOrigins string `mapstructure:"CORS_ALLOWED_ORIGINS"`
 	AllowedMethods string `mapstructure:"CORS_ALLOWED_METHODS"`
 	AllowedHeaders string `mapstructure:"CORS_ALLOWED_HEADERS"`
+}
+
+// TLSConfig contains TLS configuration for mTLS
+type TLSConfig struct {
+	Enabled  bool   `mapstructure:"TLS_ENABLED"`
+	CertFile string `mapstructure:"TLS_CERT_FILE"`
+	KeyFile  string `mapstructure:"TLS_KEY_FILE"`
+	CAFile   string `mapstructure:"TLS_CA_FILE"`
 }
 
 // LoadConfig loads configuration from environment variables and .env file
